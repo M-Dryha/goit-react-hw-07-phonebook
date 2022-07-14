@@ -1,38 +1,50 @@
-import { configureStore, combineReducers } from '@reduxjs/toolkit';
-import {
-  persistStore,
-  persistReducer,
-  FLUSH,
-  REHYDRATE,
-  PAUSE,
-  PERSIST,
-  PURGE,
-  REGISTER,
-} from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
+import { configureStore } from '@reduxjs/toolkit';
+// import { createSlice } from '@reduxjs/toolkit';
+// import storage from 'redux-persist/lib/storage';
 import myFilterSlice from './myFilterSlice';
-import myContactsSlice from './myContactsSlice';
+import { сontactApi } from './myContactsSlice';
 
-const rootReducer = combineReducers({
-  contacts: myContactsSlice,
-  filter: myFilterSlice,
-});
+// const myContactsSlice = createSlice({
+//   name: 'myContacts',
+//   initialState: [
+//     { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
+//     { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
+//     { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
+//     { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
+//   ],
+//   reducers: {
+//     addContacts(state, action) {
+//       state = [...state, action.payload];
+//       localStorage.setItem('myContacts', JSON.stringify(state));
+//       return state;
+//     },
+//     deleteContacts(state, action) {
+//       state = state.filter(c => c.id !== action.payload);
+//       return state;
+//     },
+//   },
+// });
 
-const persistConfig = {
-  key: 'root',
-  storage,
-  blacklist: ['filter'],
-};
-const persistedReducer = persistReducer(persistConfig, rootReducer);
+// const myFilterSlice = createSlice({
+//   name: 'myFilter',
+//   initialState: '',
+//   reducers: {
+//     onChangeFilter(state, action) {
+//       state = action.payload;
+//       return state;
+//     },
+//   },
+// });
 
 export const store = configureStore({
-  reducer: persistedReducer,
-  middleware: getDefaultMiddleware =>
-    getDefaultMiddleware({
-      serializableCheck: {
-        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
-      },
-    }),
+  reducer: {
+    [сontactApi.reducerPath]: сontactApi.reducer,
+    filter: myFilterSlice.reducer,
+  },
+  middleware: getDefaultMiddleware => [
+    ...getDefaultMiddleware(),
+    сontactApi.middleware,
+  ],
 });
-
-export const persistor = persistStore(store);
+// export const { addContacts, deleteContacts } = myContactsSlice.actions;
+// export const { onChangeFilter } = myFilterSlice.actions;
