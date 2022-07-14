@@ -1,15 +1,17 @@
 import { useState } from 'react';
-import { nanoid } from 'nanoid';
-import { useDispatch, useSelector } from 'react-redux';
+import { ThreeCircles } from 'react-loader-spinner';
 import { toast } from 'react-toastify';
-import { addContacts } from '../../redux/myContactsSlice';
+import {
+  useAddContactMutation,
+  useGetContactsQuery,
+} from '../../redux/myContactsSlice';
 import s from './contactForm.module.css';
 
 export default function ContactForm() {
-  const dispatch = useDispatch();
-  const contacts = useSelector(state => state.contacts);
+  const [addContacts, { isLoading }] = useAddContactMutation();
+  const { data: contacts } = useGetContactsQuery();
   const [name, setName] = useState('');
-  const [number, setNumber] = useState('');
+  const [phone, setPhone] = useState('');
 
   const handleNameChange = e => {
     const { name, value } = e.currentTarget;
@@ -19,12 +21,22 @@ export default function ContactForm() {
         setName(value);
         break;
 
-      case 'number':
-        setNumber(value);
+      case 'phone':
+        setPhone(value);
         break;
 
       default:
         return;
+    }
+  };
+
+  const fetchNewContact = async e => {
+    try {
+      await addContacts({ name, phone });
+      toast.success('Contact added successfully');
+    } catch (err) {
+      toast.error('Error');
+      console.error(err);
     }
   };
 
@@ -37,16 +49,9 @@ export default function ContactForm() {
       toast.error(`${name} is already in contact`);
       return;
     } else {
+      fetchNewContact();
       setName('');
-      setNumber('');
-
-      dispatch(
-        addContacts({
-          id: nanoid(),
-          name,
-          number,
-        })
-      );
+      setPhone('');
     }
   };
 
@@ -71,17 +76,27 @@ export default function ContactForm() {
         <input
           className={s.input}
           type="tel"
-          name="number"
+          name="phone"
           pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
           title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
           required
-          value={number}
+          value={phone}
           onChange={handleNameChange}
         />
       </label>
       <button type="submit" className={s.button}>
         Add Contact
       </button>
+      {isLoading && (
+        <ThreeCircles
+          height="50"
+          width="50"
+          color="violet"
+          outerCircleColor="grey"
+          middleCircleColor="violet"
+          innerCircleColor="grey"
+        />
+      )}
     </form>
   );
 }
