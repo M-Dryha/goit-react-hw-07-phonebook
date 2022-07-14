@@ -1,26 +1,20 @@
 import { useSelector } from 'react-redux';
-// import { deleteContacts } from '../../redux/myContactsSlice';
 import { ThreeCircles } from 'react-loader-spinner';
-// import { toast } from 'react-toastify';
 import { useGetContactsQuery } from '../../redux/myContactsSlice';
 import ContactElem from '../ContactElem';
 import s from './listContacts.module.css';
 
 const ListContacts = () => {
-  // const contacts = useSelector(state => state.contacts);
-  const { data, isFetching } = useGetContactsQuery();
-
+  const { data, isLoading } = useGetContactsQuery();
   const filter = useSelector(state => state.filter);
-  console.log(filter);
-  // const dispatch = useDispatch();
 
   const normalizedFilter = filter.toLowerCase();
-  const visibleContact = data.filter(f =>
+  const visibleContact = data?.filter(f =>
     f.name.toLowerCase().includes(normalizedFilter)
   );
   return (
     <ul className={s.list}>
-      {isFetching && (
+      {isLoading && (
         <ThreeCircles
           height="50"
           width="50"

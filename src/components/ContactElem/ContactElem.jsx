@@ -1,12 +1,12 @@
 import { toast } from 'react-toastify';
 import { ThreeCircles } from 'react-loader-spinner';
+import PropTypes from 'prop-types';
 import { useDeleteContactMutation } from '../../redux/myContactsSlice';
 import s from './ContactElem.module.css';
 
 const ContactElem = ({ id, name, phone }) => {
-  //  const { data, isLoading } = useGetContactsQuery();
-
   const [deleteContacts, { isLoading }] = useDeleteContactMutation();
+
   if (isLoading) {
     toast.success('Contact deleted successfully');
   }
@@ -34,6 +34,11 @@ const ContactElem = ({ id, name, phone }) => {
       </button>
     </li>
   );
+};
+ContactElem.propTypes = {
+  name: PropTypes.string.isRequired,
+  phone: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired,
 };
 
 export default ContactElem;
