@@ -8,7 +8,7 @@ import s from './listContacts.module.css';
 
 const ListContacts = () => {
   // const contacts = useSelector(state => state.contacts);
-  const { data, isLoading } = useGetContactsQuery();
+  const { data, isFetching, isError } = useGetContactsQuery();
 
   // const filter = useSelector(state => state.filter);
   // const dispatch = useDispatch();
@@ -19,7 +19,7 @@ const ListContacts = () => {
   // );
   return (
     <ul className={s.list}>
-      {isLoading && (
+      {isFetching && (
         <ThreeCircles
           height="50"
           width="50"
@@ -29,7 +29,9 @@ const ListContacts = () => {
           innerCircleColor="grey"
         />
       )}
-      {data &&
+      {!isFetching &&
+        !isError &&
+        data &&
         data.map(({ id, name, phone }) => (
           <ContactElem key={id} name={name} phone={phone} id={id} />
         ))}
